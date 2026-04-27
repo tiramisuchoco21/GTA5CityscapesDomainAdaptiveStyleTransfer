@@ -1,1 +1,10 @@
-# GTA5CityscapesDomainAdaptiveStyleTransfer_beforeUploading
+# 이 프로젝트는 인공지능응용및실습입니다.
+## [결과_기본]
+[인응실_결과물_자료.zip](https://github.com/user-attachments/files/27111734/_._.zip)
+## [코드_기본]
+현재 업로드가 많아 지연되고 있습니다...
+
+## [결과_추가]
+업로드 예정
+## [코드_추가]
+업로드 예정
