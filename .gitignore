@@ -2,12 +2,16 @@
 data/
 datasets/
 output_images/
+Deeplabv3/transfer/
+TrainedModels/
 
 # 체크포인트 및 모델 가중치 파일 (.pth, .h5, .ckpt 등)
 *.pth
 *.h5
 *.ckpt
 *.weights
+*.zip
+*.tar.gz
 
 # 로그 및 임시 파일
 logs/
