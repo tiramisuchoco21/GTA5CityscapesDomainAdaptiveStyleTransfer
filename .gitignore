@@ -1,0 +1,19 @@
+# 데이터셋 폴더 전체 제외
+data/
+datasets/
+output_images/
+
+# 체크포인트 및 모델 가중치 파일 (.pth, .h5, .ckpt 등)
+*.pth
+*.h5
+*.ckpt
+*.weights
+
+# 로그 및 임시 파일
+logs/
+__pycache__/
+*.log
+
+# 가상환경
+venv/
+.venv/

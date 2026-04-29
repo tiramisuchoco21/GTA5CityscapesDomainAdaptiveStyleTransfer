@@ -1,0 +1,6 @@
+=== Auto Postprocess Search Log ===
+ProCST Output: /home/work/inAI_plusStyle/ProCST/output_images
+DeepLab Script: /home/work/inAI_plusStyle/Deeplabv3/gta_infer.py
+DeepLab Transfer: /home/work/inAI_plusStyle/Deeplabv3/transfer
+DeepLab Images Dir: /home/work/inAI_plusStyle/Deeplabv3/transfer/images
+
