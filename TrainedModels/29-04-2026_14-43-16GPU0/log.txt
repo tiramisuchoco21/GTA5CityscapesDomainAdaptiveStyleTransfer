@@ -1,6 +1,0 @@
-Random Seed:  1337
-Imageio: 'libfreeimage-3.16.0-linux64.so' was not found on your computer; downloading it now.
-Try 1. Download from https://github.com/imageio/imageio-binaries/raw/master/freeimage/libfreeimage-3.16.0-linux64.so (4.6 MB)
-Downloading: 8192/4830080 bytes (0.2%)4830080/4830080 bytes (100.0%)
-  Done
-File saved as /home/work/.imageio/freeimage/libfreeimage-3.16.0-linux64.so.
