@@ -1,0 +1,138 @@
+# import os.path as osp
+# from data_handlers.domain_adaptation_dataset import domainAdaptationDataSet
+# from PIL import Image
+# import numpy as np
+# from core.constants import RESIZE_SHAPE
+
+# class GTA5DataSet(domainAdaptationDataSet):
+#     def __init__(self, root, images_list_path, scale_factor, num_scales, curr_scale, set, get_image_label=False, get_image_label_pyramid=False, get_filename=False, get_original_image=False):
+#         super(GTA5DataSet, self).__init__(root, images_list_path, scale_factor, num_scales, curr_scale, set, get_image_label=get_image_label)
+#         self.domain_resize = RESIZE_SHAPE['gta5']
+#         self.get_image_label_pyramid = get_image_label_pyramid
+#         self.get_filename = get_filename
+#         self.get_original_image = get_original_image
+#         self.id_to_trainid = {7: 0, 8: 1, 11: 2, 12: 3, 13: 4, 17: 5,
+#                               19: 6, 20: 7, 21: 8, 22: 9, 23: 10, 24: 11, 25: 12,
+#                               26: 13, 27: 14, 28: 15, 31: 16, 32: 17, 33: 18}
+#     def __len__(self):
+#         return len(self.img_ids)
+
+#     def __getitem__(self, index):
+#         name = self.img_ids[index]
+#         image = Image.open(osp.join(self.root, "images/%s" % name)).convert('RGB')
+#         if self.get_original_image:
+#             pass
+#         else: # use random crop:
+#             image = image.resize(self.domain_resize, Image.BICUBIC)
+#             left = self.domain_resize[0]-self.crop_size[0]
+#             upper= self.domain_resize[1]-self.crop_size[1]
+#             left = np.random.randint(0, high=left)
+#             upper= np.random.randint(0, high=upper)
+#             right= left + self.crop_size[0]
+#             lower= upper+ self.crop_size[1]
+#             image = image.crop((left, upper, right, lower))
+
+#         label, label_copy, labels_pyramid = None, None, None
+#         if self.get_image_label or self.get_image_label_pyramid:
+#             label = Image.open(osp.join(self.root, "labels/%s" % name))
+#             if self.get_original_image:
+#                 pass
+#             else: # use random crop
+#                 label = label.resize(self.domain_resize, Image.NEAREST)
+#                 label = label.crop((left, upper, right, lower))
+#             if self.get_image_label_pyramid:
+#                 labels_pyramid =  self.GeneratePyramid(label, is_label=True)
+#                 labels_pyramid = [self.convert_to_class_ids(label_scale) for label_scale in labels_pyramid]
+#             else:
+#                 label = self.convert_to_class_ids(label)
+
+#         scales_pyramid = self.GeneratePyramid(image)
+#         if self.get_image_label:
+#             return scales_pyramid, label
+#         elif self.get_image_label_pyramid:
+#             return scales_pyramid, labels_pyramid
+#         else:
+#             return scales_pyramid if not self.get_filename else scales_pyramid, self.img_ids[index]
+
+"""
+ProCST GTA5 Dataset - Safe Patch (ASCII only)
+"""
+
+import os
+
+file_path = './data_handlers/gta5_dataset.py'
+
+print("Patching GTA5 dataset...")
+
+if not os.path.exists(file_path):
+    print(f"Error: File not found: {file_path}")
+    exit(1)
+
+# 백업
+backup_path = file_path + '.backup_safe'
+if not os.path.exists(backup_path):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    with open(backup_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"Backup created: {backup_path}")
+
+# 읽기
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+original = content
+
+# 이미 패치된 코드 제거 (있다면)
+if 'Override img_ids with actual files' in content:
+    # 기존 패치 코드 찾아서 제거
+    lines = content.split('\n')
+    new_lines = []
+    skip_mode = False
+    
+    for line in lines:
+        if 'Override img_ids with actual files' in line or 'Auto-patched' in line:
+            skip_mode = True
+        if skip_mode:
+            # 패치 블록 끝 감지
+            if line.strip() and not line.startswith(' ' * 8) and 'def ' in line:
+                skip_mode = False
+                new_lines.append(line)
+            elif not skip_mode:
+                new_lines.append(line)
+        else:
+            new_lines.append(line)
+    
+    content = '\n'.join(new_lines)
+
+# 새로운 패치 추가 (ASCII만 사용)
+insert_code = '''
+        
+        # Use actual files from directory (ASCII safe)
+        import os
+        images_dir = osp.join(self.root, 'images')
+        if os.path.exists(images_dir):
+            actual_files = sorted([f for f in os.listdir(images_dir) if f.endswith('.png')])
+            if actual_files:
+                self.img_ids = actual_files
+                print('[GTA5] Using {} files'.format(len(self.img_ids)))'''
+
+# self.id_to_trainid 정의 다음에 삽입
+if '26: 13, 27: 14, 28: 15, 31: 16, 32: 17, 33: 18}' in content:
+    content = content.replace(
+        '                              26: 13, 27: 14, 28: 15, 31: 16, 32: 17, 33: 18}',
+        '                              26: 13, 27: 14, 28: 15, 31: 16, 32: 17, 33: 18}' + insert_code
+    )
+    print("Patch applied")
+else:
+    print("Warning: Could not find insertion point")
+
+# 저장
+if content != original:
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("Done!")
+else:
+    print("No changes needed")
+
+print("\nNext: python ./create_sit_dataset.py ...")

@@ -1,0 +1,129 @@
+# import os.path as osp
+# from data_handlers.domain_adaptation_dataset import domainAdaptationDataSet
+# from PIL import Image
+# import numpy as np
+# from core.constants import RESIZE_SHAPE
+
+# class GTA5DataSet(domainAdaptationDataSet):
+#     def __init__(self, root, images_list_path, scale_factor, num_scales, curr_scale, set, get_image_label=False, get_image_label_pyramid=False, get_filename=False, get_original_image=False):
+#         super(GTA5DataSet, self).__init__(root, images_list_path, scale_factor, num_scales, curr_scale, set, get_image_label=get_image_label)
+#         self.domain_resize = RESIZE_SHAPE['gta5']
+#         self.get_image_label_pyramid = get_image_label_pyramid
+#         self.get_filename = get_filename
+#         self.get_original_image = get_original_image
+#         self.id_to_trainid = {7: 0, 8: 1, 11: 2, 12: 3, 13: 4, 17: 5,
+#                               19: 6, 20: 7, 21: 8, 22: 9, 23: 10, 24: 11, 25: 12,
+#                               26: 13, 27: 14, 28: 15, 31: 16, 32: 17, 33: 18}
+#     def __len__(self):
+#         return len(self.img_ids)
+
+#     def __getitem__(self, index):
+#         name = self.img_ids[index]
+#         image = Image.open(osp.join(self.root, "images/%s" % name)).convert('RGB')
+#         if self.get_original_image:
+#             pass
+#         else: # use random crop:
+#             image = image.resize(self.domain_resize, Image.BICUBIC)
+#             left = self.domain_resize[0]-self.crop_size[0]
+#             upper= self.domain_resize[1]-self.crop_size[1]
+#             left = np.random.randint(0, high=left)
+#             upper= np.random.randint(0, high=upper)
+#             right= left + self.crop_size[0]
+#             lower= upper+ self.crop_size[1]
+#             image = image.crop((left, upper, right, lower))
+
+#         label, label_copy, labels_pyramid = None, None, None
+#         if self.get_image_label or self.get_image_label_pyramid:
+#             label = Image.open(osp.join(self.root, "labels/%s" % name))
+#             if self.get_original_image:
+#                 pass
+#             else: # use random crop
+#                 label = label.resize(self.domain_resize, Image.NEAREST)
+#                 label = label.crop((left, upper, right, lower))
+#             if self.get_image_label_pyramid:
+#                 labels_pyramid =  self.GeneratePyramid(label, is_label=True)
+#                 labels_pyramid = [self.convert_to_class_ids(label_scale) for label_scale in labels_pyramid]
+#             else:
+#                 label = self.convert_to_class_ids(label)
+
+#         scales_pyramid = self.GeneratePyramid(image)
+#         if self.get_image_label:
+#             return scales_pyramid, label
+#         elif self.get_image_label_pyramid:
+#             return scales_pyramid, labels_pyramid
+#         else:
+#             return scales_pyramid if not self.get_filename else scales_pyramid, self.img_ids[index]
+
+
+"""
+ProCST GTA5 Dataset - Use actual files only
+"""
+
+import os
+
+file_path = './data_handlers/gta5_dataset.py'
+
+print("Patching GTA5 dataset to use actual files...")
+
+if not os.path.exists(file_path):
+    print(f"✗ File not found: {file_path}")
+    exit(1)
+
+# 백업
+backup_path = file_path + '.backup_realfiles'
+if not os.path.exists(backup_path):
+    with open(file_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+    with open(backup_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print(f"✓ Backup: {backup_path}")
+
+# 읽기
+with open(file_path, 'r', encoding='utf-8') as f:
+    content = f.read()
+
+original = content
+
+# __init__ 함수 찾아서 수정
+# img_ids 리스트를 실제 파일 기반으로 변경
+
+if '__init__' in content and 'self.img_ids' in content:
+    # __init__ 끝부분에 실제 파일 체크 추가
+    
+    # 패턴: __init__ 함수의 마지막 부분 찾기
+    init_end_pattern = 'def __getitem__'
+    
+    if init_end_pattern in content:
+        insert_code = '''
+        # Override img_ids with actual files
+        images_dir = osp.join(self.root, 'images')
+        if osp.exists(images_dir):
+            actual_files = sorted([f for f in os.listdir(images_dir) if f.endswith('.png')])
+            if actual_files:
+                self.img_ids = actual_files
+                print(f'Using {len(self.img_ids)} actual files from {images_dir}')
+'''
+        
+        # __getitem__ 직전에 삽입
+        content = content.replace(
+            '    def __getitem__',
+            insert_code + '\n    def __getitem__'
+        )
+        
+        # os import 추가 확인
+        if 'import os\n' not in content and 'import os' not in content[:100]:
+            content = 'import os\n' + content
+        
+        print("✓ Added actual file detection")
+
+# 저장
+if content != original:
+    with open(file_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("✅ Patch applied!")
+else:
+    print("⚠ No changes made")
+
+print("\nNow:")
+print("1. Put your GTA5 images in data/gta/images/")
+print("2. Run: python ./create_sit_dataset.py ...")
