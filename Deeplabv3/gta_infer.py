@@ -14,7 +14,7 @@ def get_argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_root", type=str, required=True, help="path to your pair folder")
     parser.add_argument("--model", type=str, default='deeplabv3plus_mobilenet', help='model name')
-    parser.add_argument("--ckpt", type=str, required=True, help="path to cityscapes trained checkpoint")
+    parser.add_argument("--ckpt", type=str, default='best_deeplabv3plus_mobilenet_cityscapes_os16.pth', required=True, help="path to cityscapes trained checkpoint")
     parser.add_argument("--num_classes", type=int, default=19, help="Cityscapes classes")
     parser.add_argument("--output_stride", type=int, default=16)
     parser.add_argument("--gpu_id", type=str, default='0')
@@ -37,7 +37,7 @@ def main():
     # 2. Load Dataset
     
     test_dst = GTA(root=opts.data_root, transform=transform)
-    test_loader = data.DataLoader(test_dst, batch_size=opts.batch_size, shuffle=False, num_workers=2)
+    test_loader = data.DataLoader(test_dst, batch_size=opts.batch_size, shuffle=False, num_workers=0)
 
     print("Dataset size:", len(test_dst))
 
