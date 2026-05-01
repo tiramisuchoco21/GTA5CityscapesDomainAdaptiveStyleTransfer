@@ -10,6 +10,11 @@ from tqdm import tqdm
 
 from gta import GTA
 
+'''
+python Deeplabv3/gta_infer.py \
+  --data_root ~/inAI_plusStyle/data/gta \
+  --ckpt ~/inAI_plusStyle/Deeplabv3/checkpoints/best_deeplabv3plus_mobilenet_cityscapes_os16.pth
+'''
 def get_argparser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_root", type=str, required=True, help="path to your pair folder")

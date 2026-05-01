@@ -6,7 +6,8 @@ import torchvision.utils as vutils
 import torch.optim as optim
 import torch.utils.data
 from torch.utils.tensorboard import SummaryWriter
-import core.models as models
+#import core.models as models
+import core.models_AdaLIN as models
 from core.style_transfer import StyleTransferLoss
 from data_handlers.labels_info import trainId2label
 from core.constants import NUM_CLASSES, IGNORE_LABEL, BEST_MIOU

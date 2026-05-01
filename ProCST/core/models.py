@@ -1,3 +1,4 @@
+'''
 import torch
 import torch.nn as nn
 
@@ -77,4 +78,4 @@ def weights_init(m):
         if m.affine == True:
             m.weight.data.normal_(1.0, 0.02)
             m.bias.data.fill_(0)
-
+'''
