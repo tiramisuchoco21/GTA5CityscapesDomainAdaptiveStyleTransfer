@@ -12,12 +12,15 @@
 > mIoU 고정
 <img width="202" height="41" alt="image" src="https://github.com/user-attachments/assets/274f0ba5-c0ca-4d7d-ab27-49d3ef66b000" />
 
+
 > 기존 결과
 <img width="219" height="65" alt="image" src="https://github.com/user-attachments/assets/4f0a90ca-0e2a-4d22-be08-e5e6ebe893fa" />
+
 
 > 추가 결과
 <img width="214" height="65" alt="image" src="https://github.com/user-attachments/assets/580341c9-ed2b-47a3-a8cf-f4da86ee72b4" />
 <img width="256" height="128" alt="image" src="https://github.com/user-attachments/assets/de1633fa-a435-4a4e-a31b-3a510885492a" />
+
 
 > 정리
 - 추가 결과에는 AdaLIN Generator를, Discriminator은 기존 ProCST 코드를 사용하였습니다.
